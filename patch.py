@@ -54,10 +54,10 @@ if (cfgGetLanguage == 0) or (cfgGetRegion == 0) :
     print('Failed on locating functions.');
     exit(1);
 
-print('0: JAPANESE\n1: ENGLISH\n2: FRENCH\n3: GERMAN\n4: ITALIAN\n5: SPAINISH');
+print('0: JAPANESE\n1: ENGLISH\n2: FRENCH\n3: GERMAN\n4: ITALIAN\n5: SPANISH');
 languageCode = int(raw_input('Enter Language Code: '));
 
-print('1: JAPAN\n2: USA\n3: EUR');
+print('1: JAPAN\n2: USA\n4: EUR');
 regionCode = int(raw_input('Enter Region Code: '));
 
 code = writePayload(code, cfgGetLanguage, makeRetCodeOneByte(languageCode));
