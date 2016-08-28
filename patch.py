@@ -34,13 +34,34 @@ def parseHexStr(s):
 			t += chr(int('0x' + i, 0));
 	return t;
 
+def makeRetCodeOneByte(byte):
+    payload = parseHexStr('39 20 00 01 91 23 00 00  38 60 00 01 4E 80 00 20');
+    payload = payload[0:3]  + chr(byte) + payload[4:];
+    return payload;
+
+def writePayload(code, pos, payload):
+    return code[0:pos] + payload + code[pos+len(payload):];
 
 with open(sys.argv[1], 'rb') as f:
 	code = f.read();
 
 cfgGetLanguage = findFunction(code, parseHexStr('28 00 00 01 41 82 00 24  28 00 00 10 41 82 00 28'));
-
 cfgGetRegion = findFunction(code, parseHexStr('94 21 FF A8 93 E1 00 54  7C 7F 1B 78 90 01 00 5C 38 00 00 23 39 60 00 00  7C 09 03 A6 39 81 00 06 B5 6C 00 02 42 00 FF FC'));
 
-
 print("cfgGetLanguage: %08x, cfgGetRegion: %08x" % (cfgGetLanguage, cfgGetRegion));
+
+if (cfgGetLanguage == 0) or (cfgGetRegion == 0) :
+    print('Failed on locating functions.');
+    exit(1);
+
+print('0: JAPANESE\n1: ENGLISH\n2: FRENCH\n3: GERMAN\n4: ITALIAN\n5: SPAINISH');
+languageCode = int(raw_input('Enter Language Code: '));
+
+print('1: JAPAN\n2: USA\n3: EUR');
+regionCode = int(raw_input('Enter Region Code: '));
+
+code = writePayload(code, cfgGetLanguage, makeRetCodeOneByte(languageCode));
+code = writePayload(code, cfgGetRegion, makeRetCodeOneByte(regionCode));
+
+with open(sys.argv[1] + '.patched.elf', 'wb') as f:
+        f.write(code);
